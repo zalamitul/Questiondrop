@@ -354,6 +354,6 @@ app.post('/search',async(req,res)=>{
 })
 
 // listening on port
-app.listen(PORT, () => {
+app.listen(process.env.PORT || 3003, '0.0.0.0', () => {
     console.log("server is running");
 });
