@@ -1,0 +1,98 @@
+.header {
+    height: 80px;
+    box-shadow: 0 0.125rem 0.625rem -0.1875rem rgb(0 0 0 / 10%);
+}
+
+.navbar-brand {
+    font-size: 25px;
+    padding-top: 1.3125rem;
+    padding-bottom: 1.3125rem;
+    width: 200px;
+    border-right: 1px solid rgb(240, 240, 240);
+}
+
+.items .links {
+    color: black
+}
+
+:is(.items:hover) .links {
+    background-color: #e8f1fcce;
+    color: #2d86eb;
+    border-radius: 8px;
+}
+
+.collapse .search {
+    width: 300px;
+    margin-right: 1.5rem;
+}
+
+.search .form-group {
+    position: relative;
+}
+
+.search input {
+    background-color: rgba(127, 136, 151, .1);
+    border: 0;
+    height: 50px;
+    font-size: 15px;
+    padding-right: 18px;
+    padding-left: 18px;
+    color: #0d233e;
+}
+
+.search input:focus{
+    box-shadow: none;
+    border: none;
+    background-color: rgba(127, 136, 151, .1);
+}
+
+.form-btn {
+    position: absolute;
+    color: #6c727c;
+    padding: 12px 14px;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    transition: all .3s;
+    font-size: 18px;
+    background-color: transparent;
+    border: none;
+}
+
+.form-btn span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .3s;
+}
+
+.theme-btn {
+    text-decoration: none;
+    font-weight: 600;
+    padding-right: 18px;
+    padding-left: 18px;
+    line-height: 30px;
+    font-size: 15px;
+    position: relative;
+    box-shadow: none;
+    color: #ffffff;
+    outline: none;
+    background-color: #2d86eb;
+}
+
+.theme-btn-outline {
+    background-color: transparent;
+    color: #2d86eb;
+    box-shadow: none;
+    border: 1px solid #2d86eb;
+}
+
+.theme-btn:hover {
+    background-color: #0062ff;
+    color: #ffffff;
+}
+
+.theme-btn-outline:hover {
+    color: #ffffff;
+    background-color: #2d86eb;
+}

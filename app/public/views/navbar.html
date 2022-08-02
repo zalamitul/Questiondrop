@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="../css/Navbar.css">
+<nav class="header navbar navbar-expand-sm navbar-white bg-white fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">Question Drop</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mynavbar">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item items">
+                    <a class="nav-link links" href="javascript:void(0)">Home</a>
+                </li>
+                <li class="nav-item items">
+                    <a class="nav-link links" href="javascript:void(0)"><img src="https://as2.ftcdn.net/v2/jpg/02/29/75/83/1000_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg" width="25px" height="25px" alt="" srcset="">{{username}}
+                </li>
+            </ul>
+            <form method="post" action="/search"class="search">
+                <div class="form-group mb-0">
+                    <input class="form-control" type="text" name="search" placeholder="Type your search words...">
+                    <button class="form-btn" type="submit">
+                        <span class="material-icons">search</span>
+                    </button>
+                </div>
+            </form>
+            <div class="nav-right-button">
+
+                
+                <a ng-show="login" href="/login.html" class="btn theme-btn theme-btn-outline mr-2" data-toggle="modal" data-target="#loginModal">
+                    <i class="fa fa-sign-in" aria-hidden="true"></i> Login
+                </a>
+                <a ng-show="signup" href="../views/signup.html" class="btn theme-btn" data-toggle="modal" data-target="#signUpModal">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                    Sign up
+                </a>
+
+                <a ng-show="logout" href="/logout" class="btn theme-btn theme-btn-outline mr-2" data-toggle="modal" data-target="#loginModal">
+                    <i class="fa fa-sign-in" aria-hidden="true"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
