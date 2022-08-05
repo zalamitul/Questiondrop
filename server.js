@@ -45,7 +45,6 @@ app.use(express.json());
 
 //home direcctory
 app.get("/", async (req, res) => {
-    console.log(__dirname);
     res.sendFile(path.join(__dirname + '/views/index.html'));
 })
 
@@ -71,40 +70,30 @@ app.get("/askquestion",auth,async(req,res)=>{
     res.sendFile(path.join(__dirname,'/app/public/views/ask-question.html'))
     
 })
-//for signup 
-app.post("/views/signup", async (req, res) => {
-    console.log(req.body);
-    try {
-        const password = req.body.password;
-        const passwordHash = await securePassword(password);
-        const user = new User(req.body);
-        user.password = passwordHash;
-        const domains = req.body.domains.split(',');
-        user.domains = domains
-        await user.save();
-        res.redirect("/login");
-    } catch (e) {
-        res.status(400).send(e);
-    }
-})
 
 //push the cmt in comment array
 app.post("/reply", auth, async (req, res) => {
     try {
+        console.log("replly gettoing")
         const pid = req.body.postid;
         req.body.userid = req.user.userid;
         delete req.body.postid;
+        console.log(req.body);
         Post.update(
             { postid: pid },
             { "$push": { comments: [req.body] } },
             function (err, raw) {
-                if (err) return handleError(err);
+                if (err) return err;
                 console.log('The raw response from Mongo was ', raw);
             }
         );
-        res.redirect('/');
+        res.send("done");
+        res.end();
     } catch (e) {
+        console.log(e)
         res.status(400).send(e);
+        res.end();
+
     }
 });
 
@@ -143,7 +132,7 @@ app.post("/like", auth, async (req, res) => {
 
 //
 app.get("/questions", auth, async (req, res) => {
-    console.log(`this is cookie : ${req.cookies.jwt}`);
+    // console.log(`this is cookie : ${req.cookies.jwt}`);
     res.sendFile(path.join(__dirname + '/app/public/views/questions.html'));
 });
 
@@ -160,18 +149,19 @@ app.get("/post", auth, async (req, res) => {
 //tags
 app.post("/Availabletags", async (req, res) => {
     const temp = await Tag.find();
-    console.log(temp)
+    // console.log(temp)
     res.send(temp);
     res.end();
 })
 
 //particular tag
 app.get("/tags/:tag", async (req, res) => {
-    console.log(req.params.tag);
+    // console.log(req.params.tag);
     const temp = await Tag.findOne(req.params, { _id: false, tag: false, posts: { _id: false } });
     let z = temp.posts;
     let mappedArray = await z.map(item => item.postid);
-    console.log(mappedArray)
+    // console.log(mappedArray)
+
     const y = await Post.find({
         'postid': {
             $in: mappedArray
@@ -204,11 +194,11 @@ app.get("/tags/:tag", async (req, res) => {
 app.post("/posts", auth, async (req, res) => {
     try {
         const post = new Post(req.body);
-        console.log(req.body)
+        // console.log(req.body)
         post.userid = req.user.userid;
         post.postid = uuid.v4();
         const postid=post.postid;
-        console.log(postid);
+        // console.log(postid);
         const tags = req.body.tags.split(',');
         post.tags = tags;
         post.save();
@@ -246,15 +236,15 @@ app.post("/login", async (req, res) => {
         const password = req.body.password;
         const user = await User.findOne({ email: email });
         if (user == null) {
-            console.log("adq");
+            // console.log("adq");
             let index = await fs.readFileSync(path.join(__dirname + '/app/public/views/login.html'), 'utf8');
             index = index.replace('display: none;', 'display: block;'); //MODIFY THE FILE AS A STRING HERE
-            console.log("adw");
+            // console.log("adw");
             return res.send(index);
         }
         else {
             if (await comp(password, user.password)) {
-                console.log("aaaaad")
+                // console.log("aaaaad")
                 const token = await user.generateAuthToken();
                 res.cookie("jwt", token, {
                     expires: new Date(Date.now() + 259200000),
@@ -263,14 +253,14 @@ app.post("/login", async (req, res) => {
                 res.redirect("/")
             }
             else {
-                console.log("asdt")
+                // console.log("asdt")
                 let index = await fs.readFileSync(path.join(__dirname + '/app/public/views/login.html'), 'utf8');
                 index = index.replace('display: none;', 'display: block;'); //MODIFY THE FILE AS A STRING HERE
                 return res.send(index);
             }
         }
     } catch (e) {
-        console.log(e)
+        // console.log(e)
         res.status(400).send(e);
     }
 })
@@ -293,7 +283,7 @@ app.get("/authentication", async (req, res) => {
         const user = await User.findOne({ _id: verifyUser._id });
         req.token = token;
         req.user = user;
-        res.send(req.user.username);
+        res.send(req.user.userid);
         res.end();
     } catch (error) {
         res.end(0);
@@ -305,12 +295,41 @@ app.get("/feedload", async (req, res) => {
     try {
         const posts = await Post.find()
         res.send(posts);
-        console.log(posts)
+        // console.log(posts)
         res.end();
     } catch (e) {
         res.status(400).send(e);
     }
 })
+
+app.get("/checkuserid", async (req, res) => {
+    var userid2=req.query.userid;
+    const user = await User.findOne({ userid:userid2 });
+    if(user===null){
+        res.send(false);
+        res.end();
+    }
+    else{
+        res.send(true);
+        res.end();
+    }
+})
+
+app.get("/checkuseremail", async (req, res) => {
+    var useremail=req.query.useremail;
+    const user = await User.findOne({ email:useremail });
+    console.log(user);
+    if(user===null){
+        res.send(false);
+        res.end();
+    }
+    else{
+        res.send(true);
+        res.end();
+    }
+})
+
+
 
 //new page new question
 app.get("/Question", auth2_Question, async (req, res) => {
@@ -350,10 +369,29 @@ app.get("tag/Question", auth, async (req, res) => {
 app.post('/search',async(req,res)=>{
     const query = req.body.search;
     const words = query.split(' ');
-    console.log(words);
+    // console.log(words);
 })
 
 // listening on port
 app.listen(process.env.PORT || 3003, '0.0.0.0', () => {
     console.log("server is running");
 });
+
+
+//for signup 
+app.post("/views/signup", async (req, res) => {
+    // console.log(req.body);
+    try {
+        const password = req.body.password;
+        const passwordHash = await securePassword(password);
+        const user = new User(req.body);
+        user.password = passwordHash;
+        const domains = req.body.domains.split(',');
+        user.domains = domains
+        await user.save();
+        res.redirect("/login");
+    } catch (e) {
+        console.log("error generated");
+        res.status(400).send(e);
+    }
+})

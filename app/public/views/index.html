@@ -162,7 +162,8 @@
                             <!-- end filters -->
 
                             <div ng-show="auth">
-                                <h4> Please <a href="/login">Login</a> or <a href="../views/signup.html">signup</a> to view </h4>
+                                <h4> Please <a href="/login">Login</a> or <a href="../views/signup.html">signup</a> to
+                                    view </h4>
                             </div>
 
                             <div ng-show="showMe">
@@ -184,7 +185,7 @@
                                         </div>
                                     </div>
                                     <div class="menu">
-                                        <button onclick="like()" id="likebtn" name="{{name.postid}}" type="button"
+                                        <button ng-click="like()" id="likebtn" name="{{name.postid}}" type="button"
                                             class="btn btn-light"> <span id="CountLike">{{name.likes.length}}</span>
                                             Like</button>
                                         <button
@@ -202,22 +203,17 @@
                                                         </hr> <br>
                                                         <h4>{{cmt.userid}}:</h4>
                                                         <h4>{{cmt.body}}</h4>
-
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </button>
-                                        <button type="button" class="btn btn-light" ng-click="comments()">Share</button>
+                                        <button type="button" class="btn btn-light" >Share</button>
                                         <button type="button" class="btn btn-light">
-                                            <!-- <div> -->
-                                            <form action="reply" method="post">
+                                            <form>
                                                 Reply
-                                                <input type="hidden" name="userid" value="">
-                                                <input type="hidden" name="likes" value="0">
-                                                <input type="hidden" name="postid" value="{{name.postid}}">
-                                                <input type="text" style="border: none;" name="body">
-                                                <input type="submit"
+                                                <input type="hidden" ng-model="reply.postid=name.postid">
+                                                <input type="text" style="border: none;" ng-model="reply.body">
+                                                <input ng-click='reply_post(reply)' type="submit"
                                                     style="border: none;background-color: aliceblue;margin: 2px 5px;padding: 1px 5px;"
                                                     value="Post">
                                             </form>
@@ -348,29 +344,34 @@
             });
         };
 
-        function like() {
-            const btn = document.getElementById("likebtn");
-            let CountLike = parseInt(document.getElementById("CountLike").innerHTML);
-            console.log(CountLike);
-            const pid = btn.name;
-            try {
-                fetch(`/like?postid=${pid}`, { method: 'POST' }).then(res => {
-                    console.log(res.msg);
-                    console.log(res.data);
-                    console.log(res.body);
-                    console.log(res.body.data);
-                    location.reload();
-                }).catch(e => {
-                    console.log(`err found ${e}`);
-                });
-            }
-            catch (err) {
-                console.log(`err in ${err}`);
-            }
-        }
+
         var i = 0;
         var app = angular.module('routerApp', []);
-        app.controller('myCtrl', async function ($scope, $http) {
+        app.controller('myCtrl', async function ($scope, $http, $window) {
+
+
+            $scope.like=() =>{
+                const btn = document.getElementById("likebtn");
+                let CountLike = parseInt(document.getElementById("CountLike").innerHTML);
+                console.log(CountLike);
+                const pid = btn.name;
+                try {
+                    fetch(`/like?postid=${pid}`, { method: 'POST' }).then(res => {
+                        console.log(res.msg);
+                        console.log(res.data);
+                        console.log(res.body);
+                        console.log(res.body.data);
+                        // location.reload();
+                    $scope.askquestion(pid);
+
+                    }).catch(e => {
+                        console.log(`err found ${e}`);
+                    });
+                }
+                catch (err) {
+                    console.log(`err in ${err}`);
+                }
+            }
 
             $scope.showMe = false;
             $scope.count = 0;
@@ -386,6 +387,19 @@
             });
 
 
+            $scope.reply_post = (reply) => {
+                console.log(reply);
+
+                $scope.data = angular.copy(reply);
+                console.log($scope.data);
+                $http.post('/reply', $scope.data, {
+                    // transformRequest: angular.identity,
+                    // headers: { 'Content-Type': undefined }
+                }).then(function (results) {
+                    $scope.askquestion($scope.data.postid);
+                    // console.log(results);  
+                });
+            }
 
 
             $scope.askquestion = function (Que) {
@@ -394,20 +408,25 @@
                     method: "GET",
                     url: 'Question?postid=' + Que,
                 }).then(function (response) {
-                    if (response.data==false) {
+                    if (response.data == false) {
                         $scope.showMe = false;
                         $scope.firstName = null;
                         $scope.auth = true;
                         $scope.names = response.data;
-                        console.log('here');
+                        console.log(response.data);
+                        setTimeout(comments, 1000);
+
+                        // $window.location.href = '/login.html';
                     }
                     else {
-                        
+
                         $scope.names = response.data;
                         $scope.showMe = true;
                         $scope.auth = false;
-                        $scope.firstName=null;
+                        $scope.firstName = null;
                         setTimeout(comments, 1000);
+                        console.log(response.data);
+
                     }
 
                 });
@@ -435,15 +454,15 @@
                 console.log("after f2");
                 if (response2.data != 0) {
                     $scope.username = response2.data;
-                    $scope.logout=true;
-                    $scope.signup=false;
-                    $scope.login=false;
-                    
+                    $scope.logout = true;
+                    $scope.signup = false;
+                    $scope.login = false;
+
                 }
                 else {
-                    $scope.logout=false;
-                    $scope.signup=true;
-                    $scope.login=true;
+                    $scope.logout = false;
+                    $scope.signup = true;
+                    $scope.login = true;
 
                     $scope.username = "Unknown";
                 }
